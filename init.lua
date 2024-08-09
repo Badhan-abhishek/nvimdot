@@ -145,6 +145,12 @@ vim.opt.splitbelow = true
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣', eol = '↵' }
 
+-- Tab width
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
+vim.bo.softtabstop = 2
+
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
 
@@ -672,6 +678,15 @@ require('lazy').setup {
             }
           end,
         },
+
+        jsonls = {
+          capabilities = capabilities,
+        },
+
+        templ = {
+          capabilities = capabilities,
+        },
+
         pyright = {
           capabilities = capabilities,
         },
@@ -688,6 +703,39 @@ require('lazy').setup {
           capabilities = capabilities,
         },
         gopls = {
+          capabilities = capabilities,
+        },
+        emmet_ls = {
+          filetypes = {
+            'html',
+            'typescriptreact',
+            'javascriptreact',
+            'css',
+            'sass',
+            'scss',
+            'less',
+            'javascript',
+            'typescript',
+            'markdown',
+            'ejs',
+          },
+        },
+        biome = {
+          filetypes = {
+            'javascript',
+            'javascriptreact',
+            'json',
+            'jsonc',
+            'typescript',
+            'typescript.tsx',
+            'typescriptreact',
+            'astro',
+            'svelte',
+            'vue',
+            'css',
+          },
+        },
+        prismals = {
           capabilities = capabilities,
         },
       }
@@ -749,14 +797,14 @@ require('lazy').setup {
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        javascript = { 'prettier' },
-        javascriptreact = { 'prettier' },
-        typescript = { { 'prettier' } },
-        typescriptreact = { { 'prettier' } },
-        scss = { 'prettier' },
-        html = { 'prettier' },
+        javascript = { 'prettier', 'biome' },
+        javascriptreact = { 'prettier', 'biome' },
+        typescript = { { 'prettier', 'biome' } },
+        typescriptreact = { { 'prettier', 'biome' } },
+        scss = { 'prettier', 'biome' },
+        html = { 'prettier', 'biome' },
         python = { 'black' },
-        json = { 'prettier' },
+        json = { 'prettier', 'biome' },
       },
     },
   },
@@ -864,7 +912,7 @@ require('lazy').setup {
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
       -- Load the colorscheme here
-      vim.cmd.colorscheme 'slate'
+      vim.cmd.colorscheme 'habamax'
 
       -- You can configure highlights by doing something like
       vim.cmd.hi 'Comment gui=none'
@@ -986,6 +1034,9 @@ end)
 vim.keymap.set('n', '<C-S-N>', function()
   harpoon:list():next()
 end)
+
+vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
+vim.filetype.add { extension = { templ = 'templ' } }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
