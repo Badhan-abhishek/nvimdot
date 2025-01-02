@@ -129,7 +129,11 @@ return {
 
   {
     'stevearc/oil.nvim',
-    opts = {},
+    opts = {
+      view_otions = {
+        show_hidden = true,
+      },
+    },
     -- Optional dependencies
     dependencies = { 'nvim-tree/nvim-web-devicons' },
   },
@@ -142,15 +146,22 @@ return {
   {
     'iamcco/markdown-preview.nvim',
     cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-    ft = { 'markdown' },
-    build = function()
-      vim.fn['mkdp#util#install']()
+    build = 'cd app && yarn install',
+    init = function()
+      vim.g.mkdp_filetypes = { 'markdown' }
     end,
+    ft = { 'markdown' },
   },
   {
     'zaldih/themery.nvim',
     themes = { 'gruvbox' },
     themeConfigFile = '~/.config/nvim/lua/custom/settings/theme.lua',
     livePreview = true,
+  },
+  {
+    'nvim-java/nvim-java',
+    config = function()
+      require('java').setup()
+    end,
   },
 }

@@ -113,6 +113,8 @@ vim.opt.mouse = 'a'
 -- Don't show the mode, since it's already in status line
 vim.opt.showmode = false
 
+vim.opt.linebreak = true
+
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
@@ -175,8 +177,7 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>ql', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix [l]ist' })
-vim.keymap.set('n', '<leader>qs', vim.diagnostic.setqflist,
-  { desc = 'Display diagnostic for given namespace and buffer' })
+vim.keymap.set('n', '<leader>qs', vim.diagnostic.setqflist, { desc = 'Display diagnostic for given namespace and buffer' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -260,7 +261,7 @@ require('lazy').setup {
   --    require('Comment').setup({})
 
   -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim',    opts = {} },
+  { 'numToStr/Comment.nvim', opts = {} },
 
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following lua:
@@ -349,7 +350,7 @@ require('lazy').setup {
   -- after the plugin has been loaded:
   --  config = function() ... end
 
-  {                     -- Useful plugin to show you pending keybinds.
+  { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     config = function() -- This is the function that runs, AFTER loading
@@ -357,18 +358,18 @@ require('lazy').setup {
       -- { "<leader>c", group = "[C]ode" },
 
       -- Document existing key chains
-      require('which-key').add({
-        { "<leader>c",  group = "[C]ode",     mode = { 'n', 'x' } },
-        { "<leader>c_", hidden = true },
-        { "<leader>d",  group = "[D]ocument" },
-        { "<leader>d_", hidden = true },
-        { "<leader>r",  group = "[R]ename" },
-        { "<leader>r_", hidden = true },
-        { "<leader>s",  group = "[S]earch" },
-        { "<leader>s_", hidden = true },
-        { "<leader>w",  group = "[W]orkspace" },
-        { "<leader>w_", hidden = true },
-      })
+      require('which-key').add {
+        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
+        { '<leader>c_', hidden = true },
+        { '<leader>d', group = '[D]ocument' },
+        { '<leader>d_', hidden = true },
+        { '<leader>r', group = '[R]ename' },
+        { '<leader>r_', hidden = true },
+        { '<leader>s', group = '[S]earch' },
+        { '<leader>s_', hidden = true },
+        { '<leader>w', group = '[W]orkspace' },
+        { '<leader>w_', hidden = true },
+      }
     end,
   },
 
@@ -730,6 +731,7 @@ require('lazy').setup {
           },
         },
         biome = {
+          cmd = { 'biome', 'lsp-proxy' },
           filetypes = {
             'javascript',
             'javascriptreact',
@@ -743,8 +745,13 @@ require('lazy').setup {
             'vue',
             'css',
           },
+          root_dir = (require("lspconfig.util")).root_pattern('biome.json', 'biome.jsonc'),
+          single_file_support = false,
         },
         prismals = {
+          capabilities = capabilities,
+        },
+        tailwindcss = {
           capabilities = capabilities,
         },
       }
@@ -793,6 +800,7 @@ require('lazy').setup {
       },
     },
     opts = {
+      log_level = vim.log.levels.DEBUG,
       notify_on_error = false,
       format_on_save = false,
       -- format_on_save = {
@@ -806,14 +814,15 @@ require('lazy').setup {
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        javascript = { 'prettier', 'biome' },
-        javascriptreact = { 'prettier', 'biome' },
-        typescript = { { 'prettier', 'biome' } },
-        typescriptreact = { { 'prettier', 'biome' } },
-        scss = { 'prettier', 'biome' },
-        html = { 'prettier', 'biome' },
+        javascript = { 'biome', 'prettier' },
+        javascriptreact = { 'biome', 'prettier' },
+        typescript = { { 'biome', 'prettier' } },
+        typescriptreact = { { 'biome', 'prettier' } },
+        scss = { 'biome', 'prettier' },
+        css = { 'biome', 'prettier' },
+        html = { 'biome', 'prettier' },
         python = { 'black' },
-        json = { 'prettier', 'biome' },
+        json = { 'biome', 'prettier' },
       },
     },
   },
@@ -917,11 +926,11 @@ require('lazy').setup {
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`
     'folke/tokyonight.nvim',
-    lazy = false,    -- make sure we load this during startup if it is your main colorscheme
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
       -- Load the colorscheme here
-      vim.cmd.colorscheme 'tokyonight-storm'
+      vim.cmd.colorscheme 'tokyonight-day'
 
       -- You can configure highlights by doing something like
       vim.cmd.hi 'Comment gui=none'
