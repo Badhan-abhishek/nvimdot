@@ -12,58 +12,30 @@ return {
       { 'j-hui/fidget.nvim', opts = {} },
     },
     config = function()
-      vim.api.nvim_create_autocmd('LspAttach', {
-        group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
-        callback = function(event)
-          local map = function(keys, func, desc)
-            vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
-          end
-
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-
-          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-
-          map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-
-          map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-
-          map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-          map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-
-          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
-
-          map('K', vim.lsp.buf.hover, 'Hover Documentation')
-
-          -- WARN: This is not Goto Definition, this is Goto Declaration.
-          --  For example, in C this would take you to the header
-          map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-
-          map('gK', vim.lsp.buf.signature_help, 'Signatiure Help')
-
-          -- The following two autocommands are used to highlight references of the
-          -- word under your cursor when your cursor rests there for a little while.
-          --    See `:help CursorHold` for information about when this is executed
-          --
-          -- When you move your cursor, the highlights will be cleared (the second autocommand).
-          local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client.server_capabilities.documentHighlightProvider then
-            vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-              buffer = event.buf,
-              callback = vim.lsp.buf.document_highlight,
-            })
-
-            vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
-              buffer = event.buf,
-              callback = vim.lsp.buf.clear_references,
-            })
-          end
-        end,
-      })
-
       local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+      local common_file_types = {
+        'javascript',
+        'javascriptreact',
+        'typescript',
+        'typescriptreact',
+        'vue',
+        'svelte',
+        'css',
+        'scss',
+        'less',
+        'html',
+        'json',
+        'jsonc',
+        'yaml',
+        'markdown',
+        'md',
+        'astro',
+      }
+
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+
+      require('mason').setup()
 
       local servers = {
         ts_ls = {},
@@ -139,9 +111,16 @@ return {
         pyright = {
           capabilities = capabilities,
         },
-        eslint = {
-          capabilities = capabilities,
-        },
+        -- eslint = {
+        --   capabilities = capabilities,
+        --   filetypes = common_file_types,
+        --   settings = {
+        --     workingDirectories = { mode = 'auto' },
+        --     experimental = {
+        --       useFlatConfig = true,
+        --     },
+        --   },
+        -- },
         clangd = {
           cmd = {
             'clangd',
@@ -155,35 +134,11 @@ return {
           capabilities = capabilities,
         },
         emmet_ls = {
-          filetypes = {
-            'html',
-            'typescriptreact',
-            'javascriptreact',
-            'css',
-            'sass',
-            'scss',
-            'less',
-            'javascript',
-            'typescript',
-            'markdown',
-            'ejs',
-          },
+          filetypes = common_file_types,
         },
         biome = {
           cmd = { 'biome', 'lsp-proxy' },
-          filetypes = {
-            'javascript',
-            'javascriptreact',
-            'json',
-            'jsonc',
-            'typescript',
-            'typescript.tsx',
-            'typescriptreact',
-            'astro',
-            'svelte',
-            'vue',
-            'css',
-          },
+          filetypes = common_file_types,
           root_dir = (require 'lspconfig.util').root_pattern('biome.json', 'biome.jsonc'),
           single_file_support = false,
         },
@@ -193,15 +148,66 @@ return {
         tailwindcss = {
           capabilities = capabilities,
         },
+        elixirls = {
+          capabilities = capabilities,
+        },
       }
-
-      require('mason').setup()
 
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format lua code
+        -- 'stylua', -- Used to format lua code: Seems to be not working
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+
+      vim.api.nvim_create_autocmd('LspAttach', {
+        group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
+        callback = function(event)
+          local map = function(keys, func, desc)
+            vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+          end
+
+          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+
+          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+
+          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+
+          map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
+
+          map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
+
+          map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
+          map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+
+          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+
+          map('K', vim.lsp.buf.hover, 'Hover Documentation')
+
+          -- WARN: This is not Goto Definition, this is Goto Declaration.
+          --  For example, in C this would take you to the header
+          map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+
+          map('gK', vim.lsp.buf.signature_help, 'Signatiure Help')
+
+          -- The following two autocommands are used to highlight references of the
+          -- word under your cursor when your cursor rests there for a little while.
+          --    See `:help CursorHold` for information about when this is executed
+          --
+          -- When you move your cursor, the highlights will be cleared (the second autocommand).
+          local client = vim.lsp.get_client_by_id(event.data.client_id)
+          if client and client.server_capabilities.documentHighlightProvider then
+            vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+              buffer = event.buf,
+              callback = vim.lsp.buf.document_highlight,
+            })
+
+            vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
+              buffer = event.buf,
+              callback = vim.lsp.buf.clear_references,
+            })
+          end
+        end,
+      })
 
       require('mason-lspconfig').setup {
         ensure_installed = ensure_installed,
@@ -210,7 +216,7 @@ return {
           function(server_name)
             local server = servers[server_name] or {}
             -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
+            -- by the server configuration above Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for tsserver)
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
