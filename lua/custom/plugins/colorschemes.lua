@@ -18,7 +18,6 @@ return {
   'rebelot/kanagawa.nvim',
   'gremble0/yellowbeans.nvim',
   'rockyzhang24/arctic.nvim',
-  'folke/tokyonight.nvim',
   'Shatur/neovim-ayu',
   'RRethy/base16-nvim',
   'xero/miasma.nvim',
@@ -37,5 +36,8 @@ return {
     --   local fm = require "fluoromachine"
     --   fm.setup { glow = true, theme = "fluoromachine" }
     -- end,
+  },
+  {
+    'folke/tokyonight.nvim',
   },
 }
