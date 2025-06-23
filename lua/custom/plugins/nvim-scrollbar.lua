@@ -1,7 +1,7 @@
 return {
   {
     'petertriho/nvim-scrollbar',
-    config = {
+    opts = {
       show = true,
       marks = {
         Cursor = {

@@ -30,14 +30,8 @@ return {
   'ricardoraposo/gruvbox-minor.nvim',
   'NTBBloodbath/sweetie.nvim',
   'vim-scripts/MountainDew.vim',
-  {
-    'maxmx03/fluoromachine.nvim',
-    -- config = function()
-    --   local fm = require "fluoromachine"
-    --   fm.setup { glow = true, theme = "fluoromachine" }
-    -- end,
-  },
-  {
-    'folke/tokyonight.nvim',
-  },
+  'bluz71/vim-moonfly-colors',
+  'maxmx03/fluoromachine.nvim',
+  'folke/tokyonight.nvim',
+  'scottmckendry/cyberdream.nvim',
 }
